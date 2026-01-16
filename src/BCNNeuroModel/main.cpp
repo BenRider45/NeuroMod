@@ -8,7 +8,7 @@
 double SomaExternalCurrent(double t) { return t <= 20e-3 ?: 0; }
 
 double DendriteExternalCurrent(double t) {
-  return t >= 20.0 && t <= 40.0 ? 1.6e9 : 0;
+  return t >= 20.0 && t <= 40.0 ? 1.6 : 0;
 }
 
 int gen_HVCRA() {
@@ -22,10 +22,13 @@ int gen_HVCRA() {
 
   std::cout << "Neuron id: " << neuron.id << "\n";
   State y_0(11);
-
-  y_0 << -79.9887, -79.9660, 0.9933, 0.0110, 0.0006, 0.0000, 0.0152, 0, 0, 0, 0;
+  y_0 << -7.99887272e+01, -7.99660246e+01, 9.93296414e-01, 1.09992145e-02,
+      5.54660373e-04, 2.62081883e-06, 1.52481104e-02, 0.00000000e+00,
+      0.00000000e+00, 0.00000000e+00, 0.00000000e+00; // steady state
+  // y_0 << -79.9887, -79.9660, 0.9933, 0.0110, 0.0006, 0.0000, 0.0152, 0, 0, 0,
+  // 0;
   // y_0 << -75, -75, 0.0, 0.0, 0.0, 0.0000, 0.0, 0, 0, 0, 0;
-  //    -75,     // V_s: Somatic voltage (resting potential ~-65 mV)
+  //-75,     // V_s: Somatic voltage (resting potential ~-65 mV)
   //        -75, // V_d: Dendritic voltage (resting potential ~-65 mV)
   //        0.0, // h: Sodium inactivation (near fully inactivated at rest)
   //        0.0, // n: Potassium activation (minimally activated at rest)
