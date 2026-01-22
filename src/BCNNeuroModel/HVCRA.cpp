@@ -16,7 +16,20 @@ Eigen::MatrixXd HVCRA::SimDataToMatrix(SimData data) {
 }
 
 // double I_sL(double V_s) { return _consts.G_L * (V_s - _consts.E_L); }
+namespace {
+double m_alpha(double V_s) {
+  return (.1 * (V_s + 40)) / (1 - std::exp(-.1 * (V_s + 40)));
+}
 
+double m_beta(double V_s) { return 4 * std::exp(-0.0556 * (V_s + 65)); }
+
+double tao_m(double V_s) { return 1 / (m_alpha(V_s) + m_beta(V_s)); }
+
+double inf_m(double V_s) {
+  return (m_alpha(V_s)) / (m_alpha(V_s) + m_beta(V_s));
+}
+
+} // namespace
 State HVCRA::f(double t, State &y) {
 
   // y(0) V_s
@@ -30,6 +43,7 @@ State HVCRA::f(double t, State &y) {
   // y(8) g_d_exc
   // y(9) g_s_inh
   // y(10) g_d_inh
+  // y(11) m
 
   double I_sL, I_sNa, I_sKdr, I_sExc, I_sInh;
   I_sL = -_consts.G_L * (y(0) - _consts.E_L);
@@ -55,15 +69,28 @@ State HVCRA::f(double t, State &y) {
   double I_Td = I_dL + I_dCa + I_dCaK + I_dExc + I_dInh;
   if (t < 40) {
 
-    std::cout << "_I_sExt(" << t << "): " << _I_sExt(t) << "\n";
-    std::cout << "_I_dExt: " << _I_dExt(t) << "\n";
+    //   std::cout << "_I_sExt(" << t << "): " << _I_sExt(t) << "\n";
+    //   std::cout << "_I_dExt: " << _I_dExt(t) << "\n";
   }
   State out(11);
-  out(0) = I_Ts / _consts.C_m + _I_sExt(t) / (_consts.C_m * _consts.A_s) +
-           (y(1) - y(0)) / (_consts.R_c * _consts.C_m * _consts.A_s);
+  out(0) =
+      I_Ts / _consts.C_m +
+      10e5 * (
 
-  out(1) = I_Td / _consts.C_m + _I_dExt(t) / (_consts.C_m * _consts.A_d) +
-           (y(0) - y(1)) / (_consts.R_c * _consts.C_m * _consts.A_d);
+                 (_I_sExt(t) / (_consts.C_m * _consts.A_s))
+
+                 + ((y(1) - y(0)) / (_consts.R_c * _consts.C_m * _consts.A_s)));
+
+  out(1) =
+      I_Td / _consts.C_m +
+
+      10e5 * (
+
+                 (_I_dExt(t) / (_consts.C_m * _consts.A_d)) +
+
+                 ((y(0) - y(1)) / (_consts.R_c * _consts.C_m * _consts.A_d))
+
+             );
 
   out(2) = (h_inf(y(0)) - y(2)) / tao_h(y(0));
 
@@ -83,6 +110,7 @@ State HVCRA::f(double t, State &y) {
 
   out(10) = -(1 / _consts.tao) * y(10);
 
+  // out(11) = m_alpha() * (1 - y(11)) - m_beta(
   for (const auto num : out) {
     if (num > std::numeric_limits<double>::max()) {
       std::cerr << "ERROR: Double Max Reached\n";

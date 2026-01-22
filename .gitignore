@@ -68,3 +68,6 @@ vcpkg_installed/
 Testing/
 .cache/
 CLAUDE.md
+
+progReports/
+

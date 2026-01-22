@@ -5,15 +5,16 @@
 #include "HVCRA.hpp"
 #include "IFNeuron.hpp"
 #include "Rk4.hpp"
-double SomaExternalCurrent(double t) { return t <= 20e-3 ?: 0; }
-
+double SomaExternalCurrent(double t) {
+  return t >= 20.0 && t <= 40.0 ? .002 : 0;
+}
 double DendriteExternalCurrent(double t) {
-  return t >= 20.0 && t <= 40.0 ? 1.6 : 0;
+  return t >= 20.0 && t <= 40.0 ? 0 : 0;
 }
 
 int gen_HVCRA() {
 
-  HVCRA_CONSTANTS consts(1, 5000, 10000, 5.5, .1, 0.1, 55, 60, 120, -80, 55, 8,
+  HVCRA_CONSTANTS consts(1, 5000, 10000, 55e9, .1, 0.1, 55, 60, 120, -80, 55, 8,
                          -90, -80, 5, 150, -10);
 
   HVCRA neuron(consts, SomaExternalCurrent, DendriteExternalCurrent, .01, -1);
@@ -22,23 +23,30 @@ int gen_HVCRA() {
 
   std::cout << "Neuron id: " << neuron.id << "\n";
   State y_0(11);
-  y_0 << -7.99887272e+01, -7.99660246e+01, 9.93296414e-01, 1.09992145e-02,
-      5.54660373e-04, 2.62081883e-06, 1.52481104e-02, 0.00000000e+00,
-      0.00000000e+00, 0.00000000e+00, 0.00000000e+00; // steady state
+  // y_0 << -7.99738793e+01, -7.99734723e+01, 9.93296414e-01, 1.09992145e-02,
+  //  5.54660373e-04, 2.62081883e-06, 1.52481104e-02, 0.00000000e+00,
+
+  //    0.00000000e+00, 0.00000000e+00, 0.00000000e+00; // steady state
   // y_0 << -79.9887, -79.9660, 0.9933, 0.0110, 0.0006, 0.0000, 0.0152, 0, 0, 0,
   // 0;
+  //
+  y_0 << -7.99738793e+01, -7.99734723e+01, 9.93282275e-01, 1.10153786e-02,
+      5.54247643e-04, 2.61802838e-06, 1.52265366e-02, 0.00000000e+00,
+      0.00000000e+00, 0.00000000e+00, 0.00000000e+00;
+  std::cout << "Init: " << y_0;
+
   // y_0 << -75, -75, 0.0, 0.0, 0.0, 0.0000, 0.0, 0, 0, 0, 0;
-  //-75,     // V_s: Somatic voltage (resting potential ~-65 mV)
-  //        -75, // V_d: Dendritic voltage (resting potential ~-65 mV)
-  //        0.0, // h: Sodium inactivation (near fully inactivated at rest)
-  //        0.0, // n: Potassium activation (minimally activated at rest)
-  //        0.0, // r: Calcium activation (closed at rest)
-  //        0.0, // c: Ca-K activation (closed at rest)
-  //        0.0, // Ca: Resting calcium concentration (~50 nM)
-  //        0.0, // g_s_exc: No initial excitatory input to soma
-  //        0.0, // g_d_exc: No initial excitatory input to dendrite
-  //        0.0, // g_s_inh: No initial inhibitory input to soma
-  //        0.0; // g_d_inh: No initial inhibitory input to dendrite
+  // 75,     // V_s: Somatic voltage (resting potential ~-65 mV)
+  //         -75, // V_d: Dendritic voltage (resting potential ~-65 mV)
+  //         0.0, // h: Sodium inactivation (near fully inactivated at rest)
+  //         0.0, // n: Potassium activation (minimally activated at rest)
+  //         0.0, // r: Calcium activation (closed at rest)
+  //         0.0, // c: Ca-K activation (closed at rest)
+  //         0.0, // Ca: Resting calcium concentration (~50 nM)
+  //         0.0, // g_s_exc: No initial excitatory input to soma
+  //         0.0, // g_d_exc: No initial excitatory input to dendrite
+  //         0.0, // g_s_inh: No initial inhibitory input to soma
+  //         0.0; // g_d_inh: No initial inhibitory input to dendrite
   //
   //
   //
@@ -144,7 +152,7 @@ int main(int argc, char *argv[]) {
   //
   //  exp.writeMatrixToPython(vals, "XSqu.py", "data", true);
   //
-  // IFNeuronStuff();
-  gen_HVCRA();
+  IFNeuronStuff();
+  // gen_HVCRA();
   return 0;
 }

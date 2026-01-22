@@ -71,6 +71,9 @@ public:
 
   void post_step_process(const double t, State &y) override;
 
+  Eigen::VectorXd retroactive_ICa_Data(Eigen::VectorXd time,
+                                       Eigen::VectorXd V_d);
+
   // y(0) V_s
   // y(1) V_d
   // y(2) h
@@ -93,7 +96,7 @@ private:
   std::function<double(double)> _I_dExt;
 
   double tao_h(double V_s) {
-    return 0.1 + 0.75 / (1.0 + std::exp((V_s + 40.5) / 6.0));
+    return 0.1 + (0.75 / (1.0 + std::exp((V_s + 40.5) / 6.0)));
   };
 
   double h_inf(double V_s) { return 1.0 / (1 + std::exp((V_s + 45.0) / 7.0)); };
