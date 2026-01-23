@@ -111,7 +111,7 @@ State HVCRA::f(double t, State &y) {
   State out(11);
   out(0) =
       (I_Ts / _consts.C_m +
-       10e5 *
+       10e4 *
            (
 
                (_I_sExt(t) / (_consts.C_m * _consts.A_s))
@@ -121,7 +121,7 @@ State HVCRA::f(double t, State &y) {
   out(1) =
       I_Td / _consts.C_m +
 
-      10e5 * (
+      10e4 * (
 
                  (_I_dExt(t) / (_consts.C_m * _consts.A_d)) +
 

@@ -7,7 +7,7 @@
 #include "Rk4.hpp"
 double SomaExternalCurrent(double t) { return t >= 20.0 && t <= 40.0 ? 0 : 0; }
 double DendriteExternalCurrent(double t) {
-  return t >= 20.0 && t <= 40.0 ? .5 : 0;
+  return t >= 20.0 && t <= 80.0 ? .5 : 0;
 }
 
 int gen_HVCRA() {
@@ -40,7 +40,7 @@ int gen_HVCRA() {
       5.54660602e-04, 2.62082032e-06, 1.52481552e-02, 0.00000000e+00,
       0.00000000e+00, 0.00000000e+00, 0.00000000e+00;
 
-  std::cout << "Init: " << y_0;
+  std::cout << "Init: " << y_0 << "\n";
 
   // y_0 << -75, -75, 0.0, 0.0, 0.0, 0.0000, 0.0, 0, 0, 0, 0;
   // 75,     // V_s: Somatic voltage (resting potential ~-65 mV)
