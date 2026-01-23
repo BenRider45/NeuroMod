@@ -4,15 +4,17 @@ Eigen::MatrixXd RK4::Simulate(OdeAble &system, State y_0, double t_0,
                               double t_f) {
   // int timesteps = static_cast<int>(std::floor((t_f - t_0) / _h)) + 1;
   int timesteps = (t_f - t_0) / _h;
+
+  Eigen::VectorXd timeSteps =
+      Eigen::VectorXd::LinSpaced(timesteps + 1, t_0, t_0 + timesteps * _h);
   assert(system.verify_state(y_0));
 
   Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> data(system.ode_num,
-                                                             timesteps);
+                                                             timeSteps.size());
 
   data.col(0) = y_0;
 
   // int n = static_cast<int>(std::floor((t_f - t_0) / _h)) + 1;
-  Eigen::VectorXd timeSteps = Eigen::VectorXd::LinSpaced(timesteps, t_0, t_f);
   double t = timeSteps(1);
 
   for (int i = 0; i < timeSteps.size() - 1; i++) {

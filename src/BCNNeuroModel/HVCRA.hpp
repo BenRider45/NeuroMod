@@ -86,6 +86,10 @@ public:
   // y(9) g_s_inh
   // y(10) g_d_inh
   SimData simulate(double t_0, double t_f, double h, State y_0);
+
+  Eigen::MatrixXd GimmeCurrents(Eigen::MatrixXd Currents,
+                                Eigen::MatrixXd GatingVars,
+                                Eigen::MatrixXd CalciumConc);
   Eigen::MatrixXd SimDataToMatrix(SimData data);
   int id;
 

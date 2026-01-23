@@ -5,16 +5,14 @@
 #include "HVCRA.hpp"
 #include "IFNeuron.hpp"
 #include "Rk4.hpp"
-double SomaExternalCurrent(double t) {
-  return t >= 20.0 && t <= 40.0 ? .002 : 0;
-}
+double SomaExternalCurrent(double t) { return t >= 20.0 && t <= 40.0 ? 0 : 0; }
 double DendriteExternalCurrent(double t) {
-  return t >= 20.0 && t <= 40.0 ? 0 : 0;
+  return t >= 20.0 && t <= 40.0 ? .5 : 0;
 }
 
 int gen_HVCRA() {
 
-  HVCRA_CONSTANTS consts(1, 5000, 10000, 55e9, .1, 0.1, 55, 60, 120, -80, 55, 8,
+  HVCRA_CONSTANTS consts(1, 5000, 10000, 55, .1, 0.1, 55, 60, 120, -80, 55, 8,
                          -90, -80, 5, 150, -10);
 
   HVCRA neuron(consts, SomaExternalCurrent, DendriteExternalCurrent, .01, -1);
@@ -24,15 +22,24 @@ int gen_HVCRA() {
   std::cout << "Neuron id: " << neuron.id << "\n";
   State y_0(11);
   // y_0 << -7.99738793e+01, -7.99734723e+01, 9.93296414e-01, 1.09992145e-02,
-  //  5.54660373e-04, 2.62081883e-06, 1.52481104e-02, 0.00000000e+00,
 
   //    0.00000000e+00, 0.00000000e+00, 0.00000000e+00; // steady state
   // y_0 << -79.9887, -79.9660, 0.9933, 0.0110, 0.0006, 0.0000, 0.0152, 0, 0, 0,
   // 0;
   //
-  y_0 << -7.99738793e+01, -7.99734723e+01, 9.93282275e-01, 1.10153786e-02,
-      5.54247643e-04, 2.61802838e-06, 1.52265366e-02, 0.00000000e+00,
+  // y_0 << -7.99738793e+01, -7.99734723e+01, 9.93282275e-01, 1.10153786e-02,
+  //  5.54247643e-04, 2.61802838e-06, 1.52265366e-02, 0.00000000e+00,
+  // 0.00000000e+00, 0.00000000e+00, 0.00000000e+00;
+  //
+  //
+  //
+  //
+  //
+
+  y_0 << -7.99887355e+01, -7.99660205e+01, 9.93296422e-01, 1.09992055e-02,
+      5.54660602e-04, 2.62082032e-06, 1.52481552e-02, 0.00000000e+00,
       0.00000000e+00, 0.00000000e+00, 0.00000000e+00;
+
   std::cout << "Init: " << y_0;
 
   // y_0 << -75, -75, 0.0, 0.0, 0.0, 0.0000, 0.0, 0, 0, 0, 0;
@@ -52,16 +59,37 @@ int gen_HVCRA() {
   //
   RK4 solver(h);
   Eigen::MatrixXd data = solver.Simulate(neuron, y_0, t_0, t_f);
+  Eigen::MatrixXd Currents(2, data.cols());
+  Eigen::MatrixXd GatingVars(4, data.cols());
+  Eigen::MatrixXd CalciumConc(1, data.cols());
+
+  Currents.row(0) = data.row(0);
+  Currents.row(1) = data.row(1);
+
+  GatingVars.row(0) = data.row(2);
+  GatingVars.row(1) = data.row(3);
+  GatingVars.row(2) = data.row(4);
+  GatingVars.row(3) = data.row(5);
+
+  CalciumConc.row(0) = data.row(6);
+
+  Eigen::MatrixXd CurrentData =
+      neuron.GimmeCurrents(Currents, GatingVars, CalciumConc);
   //  for (auto vec : data) {
   //    std::cout << "Vec: " << vec << "\n";
   //  }
   // Eigen::MatrixXd m = neuron.SimDataToMatrix(data);
   // std::cout << "MatrixXd: " << m << "\n";
-  std::filesystem::path p = "./";
+  std::filesystem::path p = "./HVCRA_DATA";
   Exporto exp(p);
   // Eigen::MatrixXd m1(3, 3);
   // m1 << 1, 2, 3, 4, 5, 6, 7, 8, 9;
-  exp.writeMatrixToPython(data, "HVCRA_DATA.py", "HVCRA_DATA", true);
+  exp.writeMatrixToPython(data, "HVCRA_SYSTEM_DATA.py", "HVCRA_SYSTEM_DATA",
+                          true);
+
+  exp.writeMatrixToPython(CurrentData, "HVCRA_CURRENT_DATA.py",
+                          "HVCRA_CURRENT_DATA", true);
+
   // exp.writePlotScript("Balls.m");
 
   return 0;
@@ -152,7 +180,7 @@ int main(int argc, char *argv[]) {
   //
   //  exp.writeMatrixToPython(vals, "XSqu.py", "data", true);
   //
-  IFNeuronStuff();
-  // gen_HVCRA();
+  //  IFNeuronStuff();
+  gen_HVCRA();
   return 0;
 }
