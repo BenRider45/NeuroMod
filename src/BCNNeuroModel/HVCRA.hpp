@@ -52,7 +52,7 @@ struct HVCRA_CONSTANTS {
   double spike_conductivity_G;
 };
 
-static int NUM_ODE = 11;
+constexpr int HVCRA_NUM_ODE = 11;
 
 typedef std::function<State(double, const State &)> OdeFunc;
 typedef std::vector<State> SimData;
@@ -62,7 +62,7 @@ class HVCRA : public OdeAble {
 public:
   HVCRA(HVCRA_CONSTANTS consts, std::function<double(double)> I_sExt,
         std::function<double(double)> I_dExt, double G, int id)
-      : OdeAble(NUM_ODE), _consts(consts), id(id), _I_sExt(I_sExt),
+      : OdeAble(HVCRA_NUM_ODE), _consts(consts), id(id), _I_sExt(I_sExt),
         _I_dExt(I_dExt) {}
 
   State f(double t, State &y) override;

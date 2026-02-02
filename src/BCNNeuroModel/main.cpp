@@ -2,12 +2,42 @@
 #include <iostream>
 
 #include "Exporto.hpp"
+#include "HVCI.hpp"
 #include "HVCRA.hpp"
 #include "IFNeuron.hpp"
 #include "Rk4.hpp"
 double SomaExternalCurrent(double t) { return t >= 20.0 && t <= 40.0 ? 0 : 0; }
 double DendriteExternalCurrent(double t) {
-  return t >= 20.0 && t <= 80.0 ? .5 : 0;
+  return t >= 20.0 && t <= 40.0 ? 1 : 0;
+}
+
+double HVCICurrentFunction(double t) { return t >= 20.0 && t <= 170.0 ? 1 : 0; }
+
+void HVCI_testing() {
+  HVCI_CONSTANTS consts(-65.0, 55.0, -80.0, -75.0, 0.0, 0.1, 100.0, 20.0, 500.0,
+                        6000, 1, 2, 5);
+
+  double t_0 = 0, t_f = 200, h = .001;
+
+  HVCI HVCI(consts, HVCICurrentFunction, 0.0, 0.0, -2);
+  State y_0(HVCI_NUM_ODE);
+
+  // y_0 << -75.0, 0, 0, 0, 0, 0, 0;
+  //
+  //  y_0 << -6.58273154e+01, 1.24979359e-01, 4.84599057e-03, 9.10755213e-05,
+  //     1.91562812e-06;
+  //
+  y_0 << -6.58273154e+01, 1.24979359e-01, 4.84599057e-03, 9.10755213e-05,
+      1.91562812e-06, 0.00000000e+00, 0.00000000e+00;
+
+  RK4 Solver(h);
+
+  Eigen::MatrixXd data = Solver.Simulate(HVCI, y_0, t_0, t_f);
+
+  Exporto exp("./HVCI_NEURON");
+
+  exp.writeMatrixToPython(data, "HVCI_NEURON_DATA", "HVCI_NEURON_DATA", true);
+  return;
 }
 
 int gen_HVCRA() {
@@ -181,6 +211,7 @@ int main(int argc, char *argv[]) {
   //  exp.writeMatrixToPython(vals, "XSqu.py", "data", true);
   //
   //  IFNeuronStuff();
-  gen_HVCRA();
+  // gen_HVCRA();
+  HVCI_testing();
   return 0;
 }

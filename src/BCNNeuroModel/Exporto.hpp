@@ -4,7 +4,9 @@
 class Exporto {
 public:
   Exporto(std::filesystem::path ExportDir) : _ExportDir(ExportDir) {
-    assert(std::filesystem::exists(ExportDir));
+    if (!std::filesystem::exists(_ExportDir)) {
+      std::filesystem::create_directory(_ExportDir);
+    }
   };
 
   bool writeMatrixToOctave(Eigen::MatrixXd mat, std::filesystem::path fileName,

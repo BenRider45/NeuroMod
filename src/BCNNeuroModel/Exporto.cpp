@@ -1,8 +1,8 @@
 #include "Exporto.hpp"
 #include <filesystem>
 #include <fstream>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 #include <limits>
 
 bool Exporto::writeMatrixToOctave(Eigen::MatrixXd mat,
@@ -58,9 +58,8 @@ bool Exporto::writeMatrixToPython(Eigen::MatrixXd mat,
     timeStr.pop_back();
   }
 
-  fileName = fileName.empty()
-                 ? std::filesystem::path("ExportoPythonFile.txt")
-                 : fileName;
+  fileName = fileName.empty() ? std::filesystem::path("ExportoPythonFile.txt")
+                              : fileName;
 
   // Create data filename (.txt) and script filename (.py)
   std::filesystem::path dataFileName = fileName;
@@ -73,7 +72,8 @@ bool Exporto::writeMatrixToPython(Eigen::MatrixXd mat,
 
   // Check if files exist and overwrite flag
   if ((std::filesystem::exists(_ExportDir / dataFileName) ||
-       std::filesystem::exists(_ExportDir / scriptFileName)) && !overwrite) {
+       std::filesystem::exists(_ExportDir / scriptFileName)) &&
+      !overwrite) {
     std::cerr
         << "[ERROR] : Attempting to overwrite a file when you said not to :(\n";
     return false;
@@ -103,10 +103,12 @@ bool Exporto::writeMatrixToPython(Eigen::MatrixXd mat,
   scriptFile << "#!/usr/bin/env python3\n";
   scriptFile << "# Exporto Data Export File For Python\n";
   scriptFile << "# Written on " << timeStr << "\n";
-  scriptFile << "# This script loads the matrix data from " << dataFileName.filename().string() << "\n\n";
+  scriptFile << "# This script loads the matrix data from "
+             << dataFileName.filename().string() << "\n\n";
   scriptFile << "import numpy as np\n\n";
   scriptFile << "# Load matrix data from text file\n";
-  scriptFile << MatrixVarName << " = np.loadtxt('" << dataFileName.filename().string() << "')\n\n";
+  scriptFile << MatrixVarName << " = np.loadtxt('"
+             << dataFileName.filename().string() << "')\n\n";
   scriptFile << "# Display matrix information\n";
   scriptFile << "print('Matrix shape:', " << MatrixVarName << ".shape)\n";
   scriptFile << "print('Matrix dtype:', " << MatrixVarName << ".dtype)\n";
@@ -116,7 +118,8 @@ bool Exporto::writeMatrixToPython(Eigen::MatrixXd mat,
   scriptFile.close();
 
   std::cout << "Data written to " << _ExportDir / dataFileName << "\n";
-  std::cout << "Python loader script written to " << _ExportDir / scriptFileName << "\n";
+  std::cout << "Python loader script written to " << _ExportDir / scriptFileName
+            << "\n";
 
   return true;
 }
