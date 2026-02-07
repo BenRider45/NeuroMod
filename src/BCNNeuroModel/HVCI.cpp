@@ -46,7 +46,7 @@ State HVCI::f(double t, State &y) {
   I_t = I_L + I_Kdr + I_KHT + I_Na + I_exc + I_inh;
 
   output(0) =
-      I_t / _consts._C_m + 10e4 * (_I_ext(t) / (_consts._C_m * _consts._A));
+      (I_t / _consts._C_m) + 10e4 * (_I_ext(t) / (_consts._C_m * _consts._A));
 
   output(1) = ((a_n(y(0)) * (1 - y(1))) - b_n(y(0)) * y(1));
 

@@ -53,7 +53,7 @@ private:
 
   double a_m(double V) { return (V + 22) / (1 - std::exp(-(V + 22) / 10)); };
 
-  double a_h(double V) { return (1) / (1 + std::exp(-V / 5)); }
+  double a_h(double V) { return 0.7 * std::exp(-(V + 34) / 20); }; // new
 
   double w_inf(double V) { return 1 / (1 + std::exp(-V / 5)); };
 
